@@ -2,18 +2,21 @@
 
 # 启动前后端服务的脚本
 
+# 获取脚本所在目录的绝对路径
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 echo "==================================="
 echo "基金和股票管理系统启动脚本"
 echo "==================================="
 echo ""
 echo "正在启动后端服务..."
-cd Fund-zw/backend && npm run dev &
+cd "$SCRIPT_DIR/Fund-zw/backend" && npm run dev &
 
 # 等待2秒确保后端服务有足够时间启动
 sleep 2
 
 echo "正在启动前端服务..."
-cd ../fund-app && npm run dev &
+cd "$SCRIPT_DIR/Fund-zw/fund-app" && npm run dev &
 
 echo ""
 echo "==================================="
