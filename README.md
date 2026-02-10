@@ -145,9 +145,9 @@ $ ./start-app.sh start
 基金和股票管理系统启动脚本
 ===================================
 
-正在启动后端服务... 日志：/Users/kaeya.zhang/Desktop/zw/fund-manage-master/start_logs/backend.log
+正在启动后端服务... 日志：.../start_logs/backend.log
 后端服务启动成功！PID：12345
-正在启动前端服务... 日志：/Users/kaeya.zhang/Desktop/zw/fund-manage-master/start_logs/frontend.log
+正在启动前端服务... 日志：.../start_logs/frontend.log
 前端服务启动成功！PID：12346
 
 ===================================
@@ -156,8 +156,8 @@ $ ./start-app.sh start
 前端服务：http://localhost:5173
 后端服务：http://localhost:3001
 
-日志目录：/Users/kaeya.zhang/Desktop/zw/fund-manage-master/start_logs
-PID文件：/Users/kaeya.zhang/Desktop/zw/fund-manage-master/start_logs/pids.txt
+日志目录：.../start_logs
+PID文件：.../start_logs/pids.txt
 ```
 
 ### 停止服务示例
@@ -187,9 +187,9 @@ $ ./start-app.sh restart
 基金和股票管理系统启动脚本
 ===================================
 
-正在启动后端服务... 日志：/Users/kaeya.zhang/Desktop/zw/fund-manage-master/start_logs/backend.log
+正在启动后端服务... 日志：.../start_logs/backend.log
 后端服务启动成功！PID：12347
-正在启动前端服务... 日志：/Users/kaeya.zhang/Desktop/zw/fund-manage-master/start_logs/frontend.log
+正在启动前端服务... 日志：.../start_logs/frontend.log
 前端服务启动成功！PID：12348
 
 ===================================
@@ -198,8 +198,8 @@ $ ./start-app.sh restart
 前端服务：http://localhost:5173
 后端服务：http://localhost:3001
 
-日志目录：/Users/kaeya.zhang/Desktop/zw/fund-manage-master/start_logs
-PID文件：/Users/kaeya.zhang/Desktop/zw/fund-manage-master/start_logs/pids.txt
+日志目录：.../start_logs
+PID文件：.../start_logs/pids.txt
 ```
 
 ## 总结
