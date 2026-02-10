@@ -56,6 +56,11 @@ export const Dashboard: React.FC = React.memo(() => {
     // 启用自动刷新
     useAutoRefresh();
 
+    // 使用 useMemo 缓存响应式布局配置
+    const isMobile = useMemo(() => {
+        return typeof window !== 'undefined' && window.innerWidth < 768;
+    }, []);
+
     useEffect(() => {
         // 并行获取基金和股票数据，避免瀑布流
         Promise.all([
@@ -118,6 +123,12 @@ export const Dashboard: React.FC = React.memo(() => {
             stockAsset,
         };
     }, [fundDashboard, stockHoldings, stockQuotes]);
+
+    // 格式化数字，移除末尾的 .00
+    const formatNumber = useCallback((value: number, decimals: number = 2): string => {
+        const formatted = value.toFixed(decimals);
+        return formatted.replace(/\.00$/, '');
+    }, []);
 
     // 基金持仓列表列定义
     const fundColumns = useMemo(() => [
@@ -280,7 +291,7 @@ export const Dashboard: React.FC = React.memo(() => {
             </div>
 
             {/* 统计卡片 - 合并显示 */}
-            <Row gutter={[16, 16]} className="dashboard-stats">
+            <Row gutter={[12, 12]} className="dashboard-stats">
                 <Col xs={24} sm={12} lg={6}>
                     <Card 
                         className="stat-card" 
@@ -290,15 +301,45 @@ export const Dashboard: React.FC = React.memo(() => {
                             transition: 'all 0.3s ease',
                             borderRadius: 12,
                             overflow: 'hidden',
+                            boxShadow: 'var(--shadow-light)',
+                            border: '1px solid var(--border)',
+                            backgroundColor: 'var(--bg-secondary)',
+                            touchAction: 'manipulation',
+                            cursor: 'pointer',
+                            transform: 'translateZ(0)', // 启用硬件加速
+                            willChange: 'transform, box-shadow'
                         }}
+                        bodyStyle={{ padding: 0 }}
                     >
-                        <div className="stat-card-content">
-                            <div className="stat-card-title">总资产</div>
-                            <div className="stat-card-value">
-                                ¥{combinedStats.totalAsset.toFixed(2)}
+                        <div className="stat-card-content" style={{
+                            padding: isMobile ? '16px' : '20px',
+                            textAlign: 'center'
+                        }}>
+                            <div className="stat-card-title" style={{
+                                fontSize: isMobile ? '12px' : '14px',
+                                color: 'var(--text-secondary)',
+                                marginBottom: '8px',
+                                fontWeight: 500,
+                                letterSpacing: '0.5px'
+                            }}>总资产</div>
+                            <div className="stat-card-value" style={{
+                                fontSize: isMobile ? '20px' : '24px',
+                                fontWeight: 'bold',
+                                color: 'var(--text-primary)',
+                                marginBottom: '8px',
+                                lineHeight: 1.2,
+                                wordBreak: 'break-all'
+                            }}>
+                                ¥{formatNumber(combinedStats.totalAsset)}
                             </div>
-                            <div className="stat-card-subtitle">
-                                基金: ¥{combinedStats.fundAsset.toFixed(2)} | 股票: ¥{combinedStats.stockAsset.toFixed(2)}
+                            <div className="stat-card-subtitle" style={{
+                                fontSize: isMobile ? '10px' : '12px',
+                                color: 'var(--text-tertiary)',
+                                lineHeight: 1.3,
+                                letterSpacing: '0.3px'
+                            }}>
+                                基金: ¥{formatNumber(combinedStats.fundAsset)}<br />
+                                股票: ¥{formatNumber(combinedStats.stockAsset)}
                             </div>
                         </div>
                     </Card>
@@ -312,17 +353,46 @@ export const Dashboard: React.FC = React.memo(() => {
                             transition: 'all 0.3s ease',
                             borderRadius: 12,
                             overflow: 'hidden',
+                            boxShadow: 'var(--shadow-light)',
+                            border: '1px solid var(--border)',
+                            backgroundColor: 'var(--bg-secondary)',
+                            touchAction: 'manipulation',
+                            cursor: 'pointer',
+                            transform: 'translateZ(0)', // 启用硬件加速
+                            willChange: 'transform, box-shadow'
                         }}
+                        bodyStyle={{ padding: 0 }}
                     >
-                        <div className="stat-card-content">
-                            <div className="stat-card-title">总收益</div>
+                        <div className="stat-card-content" style={{
+                            padding: isMobile ? '16px' : '20px',
+                            textAlign: 'center'
+                        }}>
+                            <div className="stat-card-title" style={{
+                                fontSize: isMobile ? '12px' : '14px',
+                                color: 'var(--text-secondary)',
+                                marginBottom: '8px',
+                                fontWeight: 500,
+                                letterSpacing: '0.5px'
+                            }}>总收益</div>
                             <div 
                                 className="stat-card-value" 
-                                style={{ color: getProfitColor(combinedStats.totalProfit) }}
+                                style={{ 
+                                    color: getProfitColor(combinedStats.totalProfit),
+                                    fontSize: isMobile ? '20px' : '24px',
+                                    fontWeight: 'bold',
+                                    marginBottom: '8px',
+                                    lineHeight: 1.2,
+                                    wordBreak: 'break-all'
+                                }}
                             >
-                                {combinedStats.totalProfit >= 0 ? '+' : ''}¥{combinedStats.totalProfit.toFixed(2)}
+                                {combinedStats.totalProfit >= 0 ? '+' : ''}¥{formatNumber(combinedStats.totalProfit)}
                             </div>
-                            <div className="stat-card-subtitle">
+                            <div className="stat-card-subtitle" style={{
+                                fontSize: isMobile ? '10px' : '12px',
+                                color: 'var(--text-tertiary)',
+                                lineHeight: 1.3,
+                                letterSpacing: '0.3px'
+                            }}>
                                 收益率: {combinedStats.totalProfitRate.toFixed(2)}%
                             </div>
                         </div>
@@ -337,17 +407,45 @@ export const Dashboard: React.FC = React.memo(() => {
                             transition: 'all 0.3s ease',
                             borderRadius: 12,
                             overflow: 'hidden',
+                            boxShadow: 'var(--shadow-light)',
+                            border: '1px solid var(--border)',
+                            backgroundColor: 'var(--bg-secondary)',
+                            touchAction: 'manipulation',
+                            cursor: 'pointer',
+                            transform: 'translateZ(0)', // 启用硬件加速
+                            willChange: 'transform, box-shadow'
                         }}
+                        bodyStyle={{ padding: 0 }}
                     >
-                        <div className="stat-card-content">
-                            <div className="stat-card-title">总收益率</div>
+                        <div className="stat-card-content" style={{
+                            padding: isMobile ? '16px' : '20px',
+                            textAlign: 'center'
+                        }}>
+                            <div className="stat-card-title" style={{
+                                fontSize: isMobile ? '12px' : '14px',
+                                color: 'var(--text-secondary)',
+                                marginBottom: '8px',
+                                fontWeight: 500,
+                                letterSpacing: '0.5px'
+                            }}>总收益率</div>
                             <div 
                                 className="stat-card-value" 
-                                style={{ color: getProfitColor(combinedStats.totalProfitRate) }}
+                                style={{ 
+                                    color: getProfitColor(combinedStats.totalProfitRate),
+                                    fontSize: isMobile ? '20px' : '24px',
+                                    fontWeight: 'bold',
+                                    marginBottom: '8px',
+                                    lineHeight: 1.2
+                                }}
                             >
                                 {combinedStats.totalProfitRate.toFixed(2)}%
                             </div>
-                            <div className="stat-card-subtitle">
+                            <div className="stat-card-subtitle" style={{
+                                fontSize: isMobile ? '10px' : '12px',
+                                color: 'var(--text-tertiary)',
+                                lineHeight: 1.3,
+                                letterSpacing: '0.3px'
+                            }}>
                                 {combinedStats.totalProfitRate >= 0 ? '盈利' : '亏损'}
                             </div>
                         </div>
@@ -362,17 +460,46 @@ export const Dashboard: React.FC = React.memo(() => {
                             transition: 'all 0.3s ease',
                             borderRadius: 12,
                             overflow: 'hidden',
+                            boxShadow: 'var(--shadow-light)',
+                            border: '1px solid var(--border)',
+                            backgroundColor: 'var(--bg-secondary)',
+                            touchAction: 'manipulation',
+                            cursor: 'pointer',
+                            transform: 'translateZ(0)', // 启用硬件加速
+                            willChange: 'transform, box-shadow'
                         }}
+                        bodyStyle={{ padding: 0 }}
                     >
-                        <div className="stat-card-content">
-                            <div className="stat-card-title">今日收益</div>
+                        <div className="stat-card-content" style={{
+                            padding: isMobile ? '16px' : '20px',
+                            textAlign: 'center'
+                        }}>
+                            <div className="stat-card-title" style={{
+                                fontSize: isMobile ? '12px' : '14px',
+                                color: 'var(--text-secondary)',
+                                marginBottom: '8px',
+                                fontWeight: 500,
+                                letterSpacing: '0.5px'
+                            }}>今日收益</div>
                             <div 
                                 className="stat-card-value" 
-                                style={{ color: getProfitColor(combinedStats.totalDayProfit) }}
+                                style={{ 
+                                    color: getProfitColor(combinedStats.totalDayProfit),
+                                    fontSize: isMobile ? '20px' : '24px',
+                                    fontWeight: 'bold',
+                                    marginBottom: '8px',
+                                    lineHeight: 1.2,
+                                    wordBreak: 'break-all'
+                                }}
                             >
-                                {combinedStats.totalDayProfit >= 0 ? '+' : ''}¥{combinedStats.totalDayProfit.toFixed(2)}
+                                {combinedStats.totalDayProfit >= 0 ? '+' : ''}¥{formatNumber(combinedStats.totalDayProfit)}
                             </div>
-                            <div className="stat-card-subtitle">
+                            <div className="stat-card-subtitle" style={{
+                                fontSize: isMobile ? '10px' : '12px',
+                                color: 'var(--text-tertiary)',
+                                lineHeight: 1.3,
+                                letterSpacing: '0.3px'
+                            }}>
                                 {combinedStats.totalDayProfit >= 0 ? '上涨' : '下跌'}
                             </div>
                         </div>
@@ -384,20 +511,40 @@ export const Dashboard: React.FC = React.memo(() => {
             <Card 
                 className="dashboard-holdings-card" 
                 variant="borderless"
+                style={{
+                    marginTop: '16px',
+                    borderRadius: 12,
+                    boxShadow: 'var(--shadow-light)',
+                    border: '1px solid var(--border)',
+                    backgroundColor: 'var(--bg-secondary)'
+                }}
                 title={
-                    <span style={{ color: 'var(--text-primary)', fontSize: 18, fontWeight: 600 }}>
-                        <WalletOutlined style={{ marginRight: 8 }} />
+                    <span style={{ 
+                        color: 'var(--text-primary)', 
+                        fontSize: window.innerWidth >= 768 ? '18px' : '16px', 
+                        fontWeight: 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }}>
+                        <WalletOutlined />
                         我的持仓
                     </span>
                 }
             >
                 <Tabs
+                    size={window.innerWidth >= 768 ? 'default' : 'small'}
                     items={[
                         {
                             key: 'funds',
                             label: (
-                                <span>
-                                    <FundOutlined style={{ marginRight: 6 }} />
+                                <span style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    fontSize: window.innerWidth >= 768 ? '14px' : '12px'
+                                }}>
+                                    <FundOutlined />
                                     基金持仓 ({fundHoldings.length})
                                 </span>
                             ),
@@ -405,24 +552,36 @@ export const Dashboard: React.FC = React.memo(() => {
                                 <Empty 
                                     description="暂无基金持仓" 
                                     image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                    style={{ padding: '40px 20px' }}
                                 />
                             ) : (
-                                <Table
-                                    columns={fundColumns}
-                                    dataSource={fundHoldings}
-                                    rowKey="id"
-                                    pagination={false}
-                                    size={window.innerWidth < 768 ? 'small' : 'middle'}
-                                    scroll={{ x: 'max-content' }}
-                                    className="dashboard-table"
-                                />
+                                <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                                    <Table
+                                        columns={fundColumns}
+                                        dataSource={fundHoldings}
+                                        rowKey="id"
+                                        pagination={false}
+                                        size={window.innerWidth < 768 ? 'small' : 'middle'}
+                                        scroll={{ x: 'max-content' }}
+                                        className="dashboard-table"
+                                        style={{ 
+                                            minWidth: window.innerWidth < 768 ? '600px' : 'auto',
+                                            fontSize: window.innerWidth < 768 ? '12px' : '14px'
+                                        }}
+                                    />
+                                </div>
                             ),
                         },
                         {
                             key: 'stocks',
                             label: (
-                                <span>
-                                    <StockOutlined style={{ marginRight: 6 }} />
+                                <span style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    fontSize: window.innerWidth >= 768 ? '14px' : '12px'
+                                }}>
+                                    <StockOutlined />
                                     股票持仓 ({stockHoldings.length})
                                 </span>
                             ),
@@ -430,17 +589,24 @@ export const Dashboard: React.FC = React.memo(() => {
                                 <Empty 
                                     description="暂无股票持仓" 
                                     image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                    style={{ padding: '40px 20px' }}
                                 />
                             ) : (
-                                <Table
-                                    columns={stockColumns}
-                                    dataSource={stockHoldings}
-                                    rowKey="id"
-                                    pagination={false}
-                                    size={window.innerWidth < 768 ? 'small' : 'middle'}
-                                    scroll={{ x: 'max-content' }}
-                                    className="dashboard-table"
-                                />
+                                <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                                    <Table
+                                        columns={stockColumns}
+                                        dataSource={stockHoldings}
+                                        rowKey="id"
+                                        pagination={false}
+                                        size={window.innerWidth < 768 ? 'small' : 'middle'}
+                                        scroll={{ x: 'max-content' }}
+                                        className="dashboard-table"
+                                        style={{ 
+                                            minWidth: window.innerWidth < 768 ? '600px' : 'auto',
+                                            fontSize: window.innerWidth < 768 ? '12px' : '14px'
+                                        }}
+                                    />
+                                </div>
                             ),
                         },
                     ]}

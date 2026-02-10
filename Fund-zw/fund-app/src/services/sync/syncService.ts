@@ -10,6 +10,21 @@ import { stockHoldingService } from '../db/stockHoldingService';
  */
 export class SyncService {
   /**
+   * 处理 401 错误
+   */
+  private handle401Error(): void {
+    // 清除本地存储的 token
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // 提示用户重新登录
+    alert('登录已过期，请重新登录');
+    
+    // 使用 window.location.replace 跳转到登录页面，避免页面跳转被中止
+    window.location.replace('/login');
+  }
+
+  /**
    * 上传本地数据到服务端
    */
   async uploadData(): Promise<boolean> {
@@ -42,8 +57,15 @@ export class SyncService {
       }
       
       return response.success;
-    } catch (error) {
+    } catch (error: any) {
       console.error('上传数据失败:', error);
+      
+      // 处理 401 错误和未登录错误
+      if ((error.response && error.response.status === 401) || error.message === '未登录或登录已过期') {
+        this.handle401Error();
+        return false;
+      }
+      
       return false;
     }
   }
@@ -142,8 +164,15 @@ export class SyncService {
       }
       
       return false;
-    } catch (error) {
+    } catch (error: any) {
       console.error('下载数据失败:', error);
+      
+      // 处理 401 错误和未登录错误
+      if ((error.response && error.response.status === 401) || error.message === '未登录或登录已过期') {
+        this.handle401Error();
+        return false;
+      }
+      
       return false;
     }
   }

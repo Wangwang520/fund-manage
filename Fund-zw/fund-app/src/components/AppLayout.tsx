@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Layout, Menu, Button, Dropdown, Space, Drawer, App, message } from 'antd';
+import React, { useState, useMemo } from 'react';
+import { Layout, Menu, Button, Dropdown, Space, Drawer, App } from 'antd';
 import { DashboardOutlined, WalletOutlined, SettingOutlined, UserOutlined, LogoutOutlined, SyncOutlined, SunOutlined, MoonOutlined, MenuOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
@@ -17,7 +17,8 @@ export const AppLayout: React.FC = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
 
-    const menuItems = [
+    // 使用 useMemo 缓存菜单配置，避免每次渲染都重新创建
+    const menuItems = useMemo(() => [
         {
             key: '/',
             icon: <DashboardOutlined />,
@@ -33,7 +34,12 @@ export const AppLayout: React.FC = () => {
             icon: <SettingOutlined />,
             label: '设置',
         },
-    ];
+    ], []);
+
+    // 使用 useMemo 缓存响应式布局配置
+    const isMobile = useMemo(() => {
+        return typeof window !== 'undefined' && window.innerWidth < 768;
+    }, []);
 
     const handleLogout = () => {
         logout();
@@ -57,7 +63,8 @@ export const AppLayout: React.FC = () => {
         }
     };
 
-    const userMenu = [
+    // 使用 useMemo 缓存用户菜单配置
+    const userMenu = useMemo(() => [
         {
             key: 'theme',
             icon: isDarkMode ? <SunOutlined /> : <MoonOutlined />,
@@ -77,7 +84,7 @@ export const AppLayout: React.FC = () => {
             label: '退出登录',
             onClick: handleLogout,
         },
-    ];
+    ], [isDarkMode, isSyncing, toggleTheme, handleSync, handleLogout]);
 
     const handleMenuClick = (key: string) => {
         navigate(key);
@@ -87,54 +94,88 @@ export const AppLayout: React.FC = () => {
     return (
         <Layout style={{ minHeight: '100vh' }}>
             {/* 桌面端侧边栏 */}
-            <Sider
-                breakpoint="md"
-                collapsedWidth="0"
-                style={{
-                    overflow: 'auto',
-                    height: '100vh',
-                    position: 'fixed',
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
-                }}
-            >
-                <div className="app-logo" style={{ padding: '16px', fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                    💰 基金管家
-                </div>
-                <Menu
-                    theme={isDarkMode ? "dark" : "light"}
-                    mode="inline"
-                    selectedKeys={[location.pathname]}
-                    items={menuItems}
-                    onClick={({ key }) => navigate(key)}
-                />
-            </Sider>
+            {!isMobile && (
+                <Sider
+                    breakpoint="md"
+                    collapsedWidth="0"
+                    style={{
+                        overflow: 'auto',
+                        height: '100vh',
+                        position: 'fixed',
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+                        zIndex: 10,
+                    }}
+                >
+                    <div className="app-logo" style={{ 
+                        padding: '16px', 
+                        fontSize: '18px', 
+                        fontWeight: 'bold', 
+                        color: 'var(--text-primary)',
+                        textAlign: 'center'
+                    }}>
+                        💰 基金管家
+                    </div>
+                    <Menu
+                        theme={isDarkMode ? "dark" : "light"}
+                        mode="inline"
+                        selectedKeys={[location.pathname]}
+                        items={menuItems}
+                        onClick={({ key }) => navigate(key)}
+                        style={{ borderRight: 0 }}
+                    />
+                </Sider>
+            )}
             
             {/* 移动端抽屉菜单 */}
             <Drawer
-                title="菜单"
+                title={
+                    <div style={{ 
+                        fontSize: '18px', 
+                        fontWeight: 'bold', 
+                        color: 'var(--text-primary)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }}>
+                        💰 基金管家
+                    </div>
+                }
                 placement="left"
                 onClose={() => setMobileMenuOpen(false)}
                 open={mobileMenuOpen}
                 className={isDarkMode ? 'dark-drawer' : ''}
+                styles={{
+                    body: {
+                        padding: 0,
+                        backgroundColor: isDarkMode ? 'var(--bg-primary)' : '#fff'
+                    }
+                }}
+                style={{
+                    zIndex: 1000
+                }}
             >
-                <div className="app-logo" style={{ padding: '16px', fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                    💰 基金管家
-                </div>
                 <Menu
                     theme={isDarkMode ? "dark" : "light"}
                     mode="inline"
                     selectedKeys={[location.pathname]}
                     items={menuItems}
                     onClick={({ key }) => handleMenuClick(key)}
-                    style={{ marginTop: '16px' }}
+                    style={{ 
+                        marginTop: '16px',
+                        borderRight: 0 
+                    }}
                 />
             </Drawer>
             
-            <Layout style={{ marginLeft: { xs: 0, sm: 0, md: 200, lg: 200, xl: 200 }[String(location.pathname)] || 200 }}>
+            <Layout style={{ 
+                marginLeft: isMobile ? 0 : 200,
+                transition: 'margin-left 0.3s ease'
+            }}>
                 <Header style={{
-                    padding: { xs: '0 12px', sm: '0 16px', md: '0 24px' }[String(location.pathname)] || '0 24px',
+                    padding: isMobile ? '0 12px' : '0 24px',
                     position: 'sticky',
                     top: 0,
                     zIndex: 1,
@@ -144,28 +185,37 @@ export const AppLayout: React.FC = () => {
                     alignItems: 'center',
                     background: 'var(--bg-secondary)',
                     boxShadow: 'var(--shadow-light)',
-                    borderBottom: '1px solid var(--border)'
+                    borderBottom: '1px solid var(--border)',
+                    height: isMobile ? 56 : 64,
+                    transition: 'all 0.3s ease'
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         {/* 移动端菜单按钮 */}
-                        <Button
-                            type="text"
-                            icon={<MenuOutlined />}
-                            size="large"
-                            onClick={() => setMobileMenuOpen(true)}
-                            style={{ 
-                                color: 'var(--text-primary)',
-                                borderRadius: '8px',
-                                display: { xs: 'flex', sm: 'flex', md: 'none', lg: 'none', xl: 'none' }[String(location.pathname)] || 'none'
-                            }}
-                        />
+                        {isMobile && (
+                            <Button
+                                type="text"
+                                icon={<MenuOutlined />}
+                                size="large"
+                                onClick={() => setMobileMenuOpen(true)}
+                                style={{ 
+                                    color: 'var(--text-primary)',
+                                    borderRadius: '8px',
+                                    padding: '4px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                            />
+                        )}
                         <h2 className="app-header-title" style={{ 
                             color: 'var(--text-primary)',
                             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             backgroundClip: 'text',
-                            fontSize: { xs: '18px', sm: '20px', md: '24px' }[String(location.pathname)] || '24px'
+                            fontSize: isMobile ? '16px' : '24px',
+                            margin: 0,
+                            fontWeight: 'bold'
                         }}>基金管理应用</h2>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -173,45 +223,51 @@ export const AppLayout: React.FC = () => {
                         <Button
                             type="text"
                             icon={isDarkMode ? <SunOutlined /> : <MoonOutlined />}
-                            size="large"
+                            size={isMobile ? 'middle' : 'large'}
                             onClick={toggleTheme}
                             style={{ 
                                 color: 'var(--text-primary)',
                                 borderRadius: '8px',
                                 backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                transition: 'all 0.3s ease'
+                                transition: 'all 0.3s ease',
+                                padding: isMobile ? '4px' : '8px'
                             }}
                             title={isDarkMode ? '切换到亮色模式' : '切换到暗色模式'}
                         />
                         
                         {/* 用户下拉菜单 */}
-                        <Dropdown menu={{ items: userMenu }}>
+                        <Dropdown 
+                            menu={{ items: userMenu }} 
+                            placement={isMobile ? 'bottomRight' : 'bottom'}
+                        >
                             <Button
                                 type="text"
                                 icon={<UserOutlined />}
-                                size="large"
+                                size={isMobile ? 'middle' : 'large'}
                                 style={{ 
                                     color: 'var(--text-primary)',
                                     borderRadius: '8px',
                                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                    transition: 'all 0.3s ease'
+                                    transition: 'all 0.3s ease',
+                                    padding: isMobile ? '4px' : '8px'
                                 }}
                             >
-                                <Space>
-                                    {user?.username || '用户'}
+                                <Space size={isMobile ? 'small' : 'middle'}>
+                                    {!isMobile && (user?.username || '用户')}
                                 </Space>
                             </Button>
                         </Dropdown>
                     </div>
                 </Header>
                 <Content style={{
-                    margin: { xs: '12px 8px', sm: '16px 12px', md: '24px 16px' }[String(location.pathname)] || '24px 16px',
-                    padding: { xs: 12, sm: 16, md: 24 }[String(location.pathname)] || 24,
+                    margin: isMobile ? '12px 8px' : '24px 16px',
+                    padding: isMobile ? 16 : 24,
                     minHeight: 280,
                     background: 'var(--bgTertiary, var(--bg-secondary))',
-                    borderRadius: 8,
+                    borderRadius: 12,
                     boxShadow: 'var(--shadow-light)',
-                    border: '1px solid var(--border)'
+                    border: '1px solid var(--border)',
+                    transition: 'all 0.3s ease'
                 }}>
                     <Outlet />
                 </Content>

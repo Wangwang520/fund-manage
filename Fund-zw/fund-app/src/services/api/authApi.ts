@@ -25,21 +25,36 @@ export class AuthApiService {
    * 获取当前用户信息
    */
   async getCurrentUser(): Promise<{ success: boolean; data?: { user: any } }> {
-    const response = await axios.get('/api/auth/me', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    return response.data;
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return { success: false };
+    }
+    
+    try {
+      const response = await axios.get('/api/auth/me', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      // 捕获 401 错误，不抛出异常，而是返回失败响应
+      return { success: false };
+    }
   }
 
   /**
    * 获取用户数据
    */
   async getUserData(): Promise<UserDataResponse> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('未登录或登录已过期');
+    }
+    
     const response = await axios.get('/api/data/get', {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${token}`
       }
     });
     return response.data;
@@ -54,9 +69,14 @@ export class AuthApiService {
     accountGroups?: any[];
     settings?: any;
   }): Promise<{ success: boolean; message: string }> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('未登录或登录已过期');
+    }
+    
     const response = await axios.post('/api/data/save', data, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${token}`
       }
     });
     return response.data;
@@ -71,9 +91,14 @@ export class AuthApiService {
     accountGroups?: any[];
     settings?: any;
   }): Promise<{ success: boolean; message: string }> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('未登录或登录已过期');
+    }
+    
     const response = await axios.post('/api/data/update', data, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${token}`
       }
     });
     return response.data;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Input, Button, Typography, Divider, message } from 'antd';
+import { Card, Form, Input, Button, Typography, Divider } from 'antd';
 import { LockOutlined, UserOutlined, MailOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../store/authStore';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +14,8 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (error) {
-      message.error(error);
+      // 使用浏览器内置的 alert 代替 message，避免静态函数警告
+      alert(error);
       clearError();
     }
   }, [error, clearError]);
@@ -37,11 +38,13 @@ const Login: React.FC = () => {
       }
 
       if (success) {
-        message.success(isRegister ? '注册成功' : '登录成功');
+        // 使用浏览器内置的 alert 代替 message，避免静态函数警告
+        alert(isRegister ? '注册成功' : '登录成功');
         navigate('/');
       }
     } catch (err) {
-      message.error('操作失败，请重试');
+      // 使用浏览器内置的 alert 代替 message，避免静态函数警告
+      alert('操作失败，请重试');
     }
   };
 
