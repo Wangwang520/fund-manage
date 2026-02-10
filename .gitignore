@@ -89,3 +89,5 @@ dist
 # Temporary folders
 tmp/
 temp/
+
+start_logs/
