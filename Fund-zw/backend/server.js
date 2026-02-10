@@ -40,10 +40,12 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/fund-app'
     // 导入路由
     const authRoutes = require('./routes/auth')(useMemoryStore, memoryStore);
     const dataRoutes = require('./routes/data')(useMemoryStore, memoryStore);
+    const positionSyncRoutes = require('./routes/positionSync')(useMemoryStore, memoryStore);
 
     // 注册路由
     app.use('/api/auth', authRoutes);
     app.use('/api/data', dataRoutes);
+    app.use('/api/position-sync', positionSyncRoutes);
 
     // 根路径路由
     app.get('/', (req, res) => {
@@ -54,6 +56,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/fund-app'
         endpoints: {
           auth: '/api/auth/*',
           data: '/api/data/*',
+          positionSync: '/api/position-sync/*',
           health: '/api/health'
         },
         storage: useMemoryStore ? 'memory' : 'mongodb'

@@ -29,28 +29,14 @@ export default defineConfig({
         target: 'http://localhost:3001',
         changeOrigin: true,
       },
+      '/api/position-sync': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
     },
   },
   build: {
     // 优化构建输出
     target: 'esnext',
-    // 代码分割
-    rollupOptions: {
-      output: {
-        manualChunks: () => {
-          // 将第三方库拆分为单独的chunk
-          return {
-            'vendor': ['react', 'react-dom', 'react-router-dom'],
-            'antd': ['antd'],
-            'echarts': ['echarts', 'echarts-for-react'],
-          };
-        },
-      },
-    },
-    // 启用压缩
-    minify: 'terser',
-    terserOptions: {
-      compress: true,
-    },
   },
 })

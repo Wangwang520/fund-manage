@@ -533,7 +533,7 @@ export const Dashboard: React.FC = React.memo(() => {
                 }
             >
                 <Tabs
-                    size={window.innerWidth >= 768 ? 'default' : 'small'}
+                    size={window.innerWidth >= 768 ? 'middle' : 'small'}
                     items={[
                         {
                             key: 'funds',
