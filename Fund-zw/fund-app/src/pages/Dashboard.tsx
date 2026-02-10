@@ -412,8 +412,9 @@ export const Dashboard: React.FC = React.memo(() => {
                                     dataSource={fundHoldings}
                                     rowKey="id"
                                     pagination={false}
-                                    size="middle"
-                                    scroll={{ x: 800 }}
+                                    size={window.innerWidth < 768 ? 'small' : 'middle'}
+                                    scroll={{ x: 'max-content' }}
+                                    className="dashboard-table"
                                 />
                             ),
                         },
@@ -436,8 +437,9 @@ export const Dashboard: React.FC = React.memo(() => {
                                     dataSource={stockHoldings}
                                     rowKey="id"
                                     pagination={false}
-                                    size="middle"
-                                    scroll={{ x: 800 }}
+                                    size={window.innerWidth < 768 ? 'small' : 'middle'}
+                                    scroll={{ x: 'max-content' }}
+                                    className="dashboard-table"
                                 />
                             ),
                         },

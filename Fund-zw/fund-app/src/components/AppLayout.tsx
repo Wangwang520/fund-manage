@@ -1,6 +1,6 @@
-import React from 'react';
-import { Layout, Menu, Button, Dropdown, Space } from 'antd';
-import { DashboardOutlined, WalletOutlined, SettingOutlined, UserOutlined, LogoutOutlined, SyncOutlined, SunOutlined, MoonOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Layout, Menu, Button, Dropdown, Space, Drawer, App, message } from 'antd';
+import { DashboardOutlined, WalletOutlined, SettingOutlined, UserOutlined, LogoutOutlined, SyncOutlined, SunOutlined, MoonOutlined, MenuOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useThemeStore } from '../store/themeStore';
@@ -9,10 +9,13 @@ import { syncService } from '../services/sync/syncService';
 const { Header, Content, Sider } = Layout;
 
 export const AppLayout: React.FC = () => {
+    const { message: antdMessage } = App.useApp();
     const navigate = useNavigate();
     const location = useLocation();
     const { user, logout } = useAuthStore();
     const { isDarkMode, toggleTheme } = useThemeStore();
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
 
     const menuItems = [
         {
@@ -38,12 +41,19 @@ export const AppLayout: React.FC = () => {
     };
 
     const handleSync = async () => {
-        const success = await syncService.uploadData();
-        if (success) {
-            // 显示同步成功提示
-            console.log('数据同步成功');
-        } else {
-            console.log('数据同步失败');
+        setIsSyncing(true);
+        try {
+            const result = await syncService.manualSync();
+            if (result.success) {
+                antdMessage.success(result.message);
+            } else {
+                antdMessage.error(result.message);
+            }
+        } catch (error) {
+            console.error('同步失败:', error);
+            antdMessage.error('同步失败，请稍后重试');
+        } finally {
+            setIsSyncing(false);
         }
     };
 
@@ -56,9 +66,10 @@ export const AppLayout: React.FC = () => {
         },
         {
             key: 'sync',
-            icon: <SyncOutlined />,
-            label: '同步数据',
+            icon: isSyncing ? <LoadingOutlined spin /> : <SyncOutlined />,
+            label: isSyncing ? '同步中...' : '同步数据',
             onClick: handleSync,
+            disabled: isSyncing,
         },
         {
             key: 'logout',
@@ -68,10 +79,16 @@ export const AppLayout: React.FC = () => {
         },
     ];
 
+    const handleMenuClick = (key: string) => {
+        navigate(key);
+        setMobileMenuOpen(false);
+    };
+
     return (
         <Layout style={{ minHeight: '100vh' }}>
+            {/* 桌面端侧边栏 */}
             <Sider
-                breakpoint="lg"
+                breakpoint="md"
                 collapsedWidth="0"
                 style={{
                     overflow: 'auto',
@@ -82,7 +99,7 @@ export const AppLayout: React.FC = () => {
                     bottom: 0,
                 }}
             >
-                <div className="app-logo">
+                <div className="app-logo" style={{ padding: '16px', fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
                     💰 基金管家
                 </div>
                 <Menu
@@ -93,9 +110,31 @@ export const AppLayout: React.FC = () => {
                     onClick={({ key }) => navigate(key)}
                 />
             </Sider>
-            <Layout style={{ marginLeft: 200 }}>
+            
+            {/* 移动端抽屉菜单 */}
+            <Drawer
+                title="菜单"
+                placement="left"
+                onClose={() => setMobileMenuOpen(false)}
+                open={mobileMenuOpen}
+                className={isDarkMode ? 'dark-drawer' : ''}
+            >
+                <div className="app-logo" style={{ padding: '16px', fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                    💰 基金管家
+                </div>
+                <Menu
+                    theme={isDarkMode ? "dark" : "light"}
+                    mode="inline"
+                    selectedKeys={[location.pathname]}
+                    items={menuItems}
+                    onClick={({ key }) => handleMenuClick(key)}
+                    style={{ marginTop: '16px' }}
+                />
+            </Drawer>
+            
+            <Layout style={{ marginLeft: { xs: 0, sm: 0, md: 200, lg: 200, xl: 200 }[String(location.pathname)] || 200 }}>
                 <Header style={{
-                    padding: '0 24px',
+                    padding: { xs: '0 12px', sm: '0 16px', md: '0 24px' }[String(location.pathname)] || '0 24px',
                     position: 'sticky',
                     top: 0,
                     zIndex: 1,
@@ -107,14 +146,29 @@ export const AppLayout: React.FC = () => {
                     boxShadow: 'var(--shadow-light)',
                     borderBottom: '1px solid var(--border)'
                 }}>
-                    <h2 className="app-header-title" style={{ 
-                        color: 'var(--text-primary)',
-                        background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text'
-                    }}>基金管理应用</h2>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        {/* 移动端菜单按钮 */}
+                        <Button
+                            type="text"
+                            icon={<MenuOutlined />}
+                            size="large"
+                            onClick={() => setMobileMenuOpen(true)}
+                            style={{ 
+                                color: 'var(--text-primary)',
+                                borderRadius: '8px',
+                                display: { xs: 'flex', sm: 'flex', md: 'none', lg: 'none', xl: 'none' }[String(location.pathname)] || 'none'
+                            }}
+                        />
+                        <h2 className="app-header-title" style={{ 
+                            color: 'var(--text-primary)',
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text',
+                            fontSize: { xs: '18px', sm: '20px', md: '24px' }[String(location.pathname)] || '24px'
+                        }}>基金管理应用</h2>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {/* 主题切换按钮 */}
                         <Button
                             type="text"
@@ -151,8 +205,8 @@ export const AppLayout: React.FC = () => {
                     </div>
                 </Header>
                 <Content style={{
-                    margin: '24px 16px',
-                    padding: 24,
+                    margin: { xs: '12px 8px', sm: '16px 12px', md: '24px 16px' }[String(location.pathname)] || '24px 16px',
+                    padding: { xs: 12, sm: 16, md: 24 }[String(location.pathname)] || 24,
                     minHeight: 280,
                     background: 'var(--bgTertiary, var(--bg-secondary))',
                     borderRadius: 8,

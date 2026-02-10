@@ -507,8 +507,9 @@ export const StockPortfolio: React.FC = () => {
                     dataSource={data}
                     rowKey="id"
                     pagination={false}
-                    scroll={{ x: 1200 }}
-                    size="middle"
+                    scroll={{ x: 'max-content' }}
+                    size={window.innerWidth < 768 ? 'small' : 'middle'}
+                    className="portfolio-table"
                 />
             </>
         );

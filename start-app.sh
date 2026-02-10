@@ -132,41 +132,73 @@ start_frontend() {
 stop_services() {
   echo -e "${BLUE}正在停止服务...${NC}"
   
+  # 停止后端服务
+  local backend_pid
   if [ -f "$PID_FILE" ]; then
     # 读取PID文件
     source "$PID_FILE"
-    
-    # 停止后端服务
-    if [ ! -z "$BACKEND_PID" ] && ps -p $BACKEND_PID > /dev/null 2>&1; then
-      echo -e "${YELLOW}正在停止后端服务（PID：$BACKEND_PID）...${NC}"
-      kill $BACKEND_PID
-      if [ $? -eq 0 ]; then
-        echo -e "${GREEN}后端服务停止成功${NC}"
-      else
-        echo -e "${RED}后端服务停止失败${NC}"
-      fi
-    else
-      echo -e "${YELLOW}后端服务未运行${NC}"
-    fi
-    
-    # 停止前端服务
-    if [ ! -z "$FRONTEND_PID" ] && ps -p $FRONTEND_PID > /dev/null 2>&1; then
-      echo -e "${YELLOW}正在停止前端服务（PID：$FRONTEND_PID）...${NC}"
-      kill $FRONTEND_PID
-      if [ $? -eq 0 ]; then
-        echo -e "${GREEN}前端服务停止成功${NC}"
-      else
-        echo -e "${RED}前端服务停止失败${NC}"
-      fi
-    else
-      echo -e "${YELLOW}前端服务未运行${NC}"
-    fi
-    
-    # 删除PID文件
-    rm -f "$PID_FILE"
-  else
-    echo -e "${YELLOW}未找到服务PID文件，可能服务未运行${NC}"
+    backend_pid="$BACKEND_PID"
   fi
+  
+  # 尝试通过PID停止后端服务
+  if [ ! -z "$backend_pid" ] && ps -p $backend_pid > /dev/null 2>&1; then
+    echo -e "${YELLOW}正在停止后端服务（PID：$backend_pid）...${NC}"
+    kill $backend_pid
+    if [ $? -eq 0 ]; then
+      echo -e "${GREEN}后端服务停止成功${NC}"
+    else
+      echo -e "${RED}后端服务停止失败${NC}"
+    fi
+  else
+    echo -e "${YELLOW}后端服务未运行或PID无效${NC}"
+  fi
+  
+  # 检查后端端口是否被占用，如果是，尝试停止占用端口的进程
+  if lsof -i:3001 > /dev/null 2>&1; then
+    local port_pid=$(lsof -t -i:3001)
+    echo -e "${YELLOW}发现后端端口3001被占用（PID：$port_pid），尝试停止该进程...${NC}"
+    kill $port_pid
+    if [ $? -eq 0 ]; then
+      echo -e "${GREEN}成功停止占用后端端口的进程${NC}"
+    else
+      echo -e "${RED}停止占用后端端口的进程失败${NC}"
+    fi
+  fi
+  
+  # 停止前端服务
+  local frontend_pid
+  if [ -f "$PID_FILE" ]; then
+    source "$PID_FILE"
+    frontend_pid="$FRONTEND_PID"
+  fi
+  
+  # 尝试通过PID停止前端服务
+  if [ ! -z "$frontend_pid" ] && ps -p $frontend_pid > /dev/null 2>&1; then
+    echo -e "${YELLOW}正在停止前端服务（PID：$frontend_pid）...${NC}"
+    kill $frontend_pid
+    if [ $? -eq 0 ]; then
+      echo -e "${GREEN}前端服务停止成功${NC}"
+    else
+      echo -e "${RED}前端服务停止失败${NC}"
+    fi
+  else
+    echo -e "${YELLOW}前端服务未运行或PID无效${NC}"
+  fi
+  
+  # 检查前端端口是否被占用，如果是，尝试停止占用端口的进程
+  if lsof -i:5173 > /dev/null 2>&1; then
+    local port_pid=$(lsof -t -i:5173)
+    echo -e "${YELLOW}发现前端端口5173被占用（PID：$port_pid），尝试停止该进程...${NC}"
+    kill $port_pid
+    if [ $? -eq 0 ]; then
+      echo -e "${GREEN}成功停止占用前端端口的进程${NC}"
+    else
+      echo -e "${RED}停止占用前端端口的进程失败${NC}"
+    fi
+  fi
+  
+  # 删除PID文件
+  rm -f "$PID_FILE"
   
   echo -e "${BLUE}服务停止操作完成${NC}"
 }
