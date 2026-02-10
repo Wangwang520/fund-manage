@@ -1,0 +1,490 @@
+/* Component Styles for Fund Manager App */
+
+/* Ant Design Overrides */
+.ant-layout {
+    background: transparent !important;
+}
+
+.ant-layout-sider {
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%) !important;
+    box-shadow: var(--shadow);
+}
+
+.ant-layout-header {
+    background: rgba(26, 31, 58, 0.8) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-light);
+}
+
+.ant-layout-content {
+    background: transparent !important;
+}
+
+.ant-menu-dark {
+    background: transparent !important;
+}
+
+.ant-menu-dark .ant-menu-item {
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin: 4px 8px;
+}
+
+.ant-menu-dark .ant-menu-item:hover {
+    background: rgba(102, 126, 234, 0.15) !important;
+    color: var(--text-primary);
+    transform: translateX(4px);
+}
+
+.ant-menu-dark .ant-menu-item-selected {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%) !important;
+    color: #fff !important;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* Logo Area */
+.app-logo {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 800;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.5px;
+    padding: 0 16px;
+}
+
+/* Header Title */
+.app-header-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Dashboard Stats Cards */
+.dashboard-stats {
+    margin-bottom: var(--spacing-xl);
+}
+
+.stat-card {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-lg) !important;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-primary);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.3) !important;
+}
+
+.stat-card:hover::before {
+    opacity: 1;
+}
+
+.ant-statistic-title {
+    color: var(--text-secondary) !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: var(--spacing-sm);
+}
+
+.ant-statistic-content {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 1.75rem !important;
+    font-weight: 700;
+    color: var(--text-primary) !important;
+}
+
+.ant-statistic-content-prefix {
+    margin-right: 4px;
+}
+
+/* Custom Stat Card Content */
+.stat-card-content {
+    padding: 8px 0;
+}
+
+.stat-card-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.stat-card-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.stat-card-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    line-height: 1.4;
+}
+
+/* Dashboard Holdings Card */
+.dashboard-holdings-card {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+}
+
+.dashboard-holdings-card .ant-card-head {
+    background: transparent !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+/* Portfolio Table */
+.ant-table {
+    background: transparent !important;
+}
+
+.ant-table-wrapper {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.ant-table-thead>tr>th {
+    background: rgba(102, 126, 234, 0.1) !important;
+    color: var(--text-primary) !important;
+    font-weight: 600;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.3) !important;
+}
+
+.ant-table-tbody>tr {
+    transition: all 0.2s ease;
+}
+
+.ant-table-tbody>tr:hover>td {
+    background: rgba(102, 126, 234, 0.05) !important;
+}
+
+.ant-table-tbody>tr>td {
+    border-bottom: 1px solid var(--border-light) !important;
+    color: var(--text-secondary) !important;
+}
+
+/* Buttons */
+.ant-btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%) !important;
+    border: none !important;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+}
+
+.ant-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4) !important;
+}
+
+.ant-btn-link {
+    color: var(--primary) !important;
+    transition: all 0.2s ease;
+}
+
+.ant-btn-link:hover {
+    color: var(--primary-light) !important;
+}
+
+.ant-btn-link.ant-btn-dangerous {
+    color: var(--color-danger) !important;
+}
+
+.ant-btn-link.ant-btn-dangerous:hover {
+    color: var(--color-danger-dark) !important;
+}
+
+/* Modal */
+.ant-modal-content {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.ant-modal-header {
+    background: transparent !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+.ant-modal-title {
+    color: var(--text-primary) !important;
+    font-weight: 700;
+}
+
+.ant-modal-close {
+    color: var(--text-secondary) !important;
+}
+
+.ant-modal-close:hover {
+    color: var(--text-primary) !important;
+}
+
+.ant-modal-body {
+    color: var(--text-secondary);
+}
+
+.ant-modal-footer {
+    border-top: 1px solid var(--border) !important;
+}
+
+/* Form */
+.ant-form-item-label>label {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Login Page Form Labels */
+.login-page .ant-form-item-label>label {
+    color: #000000 !important;
+}
+
+.ant-input,
+.ant-input-number,
+.ant-input-number-input {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+/* Login Page Inputs */
+.login-page .ant-input,
+.login-page .ant-input-number,
+.login-page .ant-input-number-input {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid #e5e7eb !important;
+    color: #000000 !important;
+}
+
+.ant-input:hover,
+.ant-input-number:hover {
+    border-color: rgba(102, 126, 234, 0.5) !important;
+}
+
+.ant-input:focus,
+.ant-input-number:focus,
+.ant-input-number-focused {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2) !important;
+}
+
+.ant-input::placeholder {
+    color: var(--text-tertiary);
+}
+
+/* Spin */
+.ant-spin {
+    color: var(--primary) !important;
+}
+
+/* Popconfirm */
+.ant-popover-inner {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border);
+}
+
+.ant-popover-message-title,
+.ant-popover-inner-content {
+    color: var(--text-primary) !important;
+}
+
+.ant-popover-arrow-content {
+    background: var(--bg-secondary) !important;
+}
+
+/* Message */
+.ant-message-notice-content {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border);
+    color: var(--text-primary) !important;
+    box-shadow: var(--shadow);
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: var(--spacing-xl);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+}
+
+/* Settings Card */
+.settings-card {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+}
+
+.settings-card .ant-card-head {
+    background: transparent !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+.settings-card .ant-card-head-title {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+}
+
+/* Radio */
+.ant-radio-wrapper {
+    color: var(--text-secondary) !important;
+}
+
+.ant-radio-checked .ant-radio-inner {
+    border-color: var(--primary) !important;
+    background: var(--primary) !important;
+}
+
+.ant-radio-inner {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: var(--border) !important;
+}
+
+/* Alert */
+.ant-alert {
+    background: rgba(102, 126, 234, 0.1) !important;
+    border: 1px solid rgba(102, 126, 234, 0.3) !important;
+}
+
+.ant-alert-message {
+    color: var(--text-primary) !important;
+}
+
+.ant-alert-description {
+    color: var(--text-secondary) !important;
+}
+
+.ant-alert-warning {
+    background: rgba(245, 158, 11, 0.1) !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Tag */
+.ant-tag {
+    background: rgba(102, 126, 234, 0.15) !important;
+    border-color: rgba(102, 126, 234, 0.3) !important;
+    color: var(--primary) !important;
+}
+
+/* Divider */
+.ant-divider {
+    border-color: var(--border) !important;
+}
+
+/* Typography */
+.ant-typography {
+    color: var(--text-primary);
+}
+
+.ant-typography.ant-typography-secondary {
+    color: var(--text-secondary);
+}
+
+/* Login Page Typography Override */
+.login-page .ant-typography {
+    color: #000000 !important;
+}
+
+/* Profit Colors */
+.profit-positive {
+    color: var(--color-success) !important;
+}
+
+.profit-negative {
+    color: var(--color-danger) !important;
+}
+
+/* Loading State */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+/* Fade Animation */
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ant-statistic-content {
+        font-size: 1.25rem !important;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+}
