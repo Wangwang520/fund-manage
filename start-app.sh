@@ -16,8 +16,7 @@ cd "$SCRIPT_DIR/Fund-zw/backend" && npm run dev &
 sleep 2
 
 echo "正在启动前端服务..."
-cd "$SCRIPT_DIR/Fund-zw/fund-app" && npm run dev &
-
+cd "$SCRIPT_DIR/Fund-zw/fund-app" && HOST=0.0.0.0 PORT=5173 npm run dev -- --host 0.0.0.0 --port 5173 &
 echo ""
 echo "==================================="
 echo "服务启动完成！"
