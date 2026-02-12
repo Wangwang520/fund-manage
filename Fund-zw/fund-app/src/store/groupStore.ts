@@ -1,69 +1,59 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import type { AccountGroup } from '../models';
+import { groupService } from '../services/db/groupService';
 
 interface GroupState {
   // 状态
   groups: AccountGroup[];
+  loading: boolean;
   
   // 动作
-  addGroup: (group: Omit<AccountGroup, 'id' | 'createdAt' | 'updatedAt'>) => void;
-  updateGroup: (id: string, updates: Partial<AccountGroup>) => void;
-  deleteGroup: (id: string) => void;
+  addGroup: (group: Omit<AccountGroup, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
+  updateGroup: (id: string, updates: Partial<AccountGroup>) => Promise<void>;
+  deleteGroup: (id: string) => Promise<void>;
   getGroup: (id: string) => AccountGroup | undefined;
-  loadGroups: () => void;
+  loadGroups: () => Promise<void>;
 }
 
 const defaultGroups: AccountGroup[] = [];
 
 export const useGroupStore = create<GroupState>()(
-  persist(
-    (set, get) => ({
-      groups: defaultGroups,
+  (set, get) => ({
+    groups: defaultGroups,
+    loading: false,
 
-      addGroup: (group) => {
-        const newGroup: AccountGroup = {
-          ...group,
-          id: crypto.randomUUID(),
-          createdAt: Date.now(),
-          updatedAt: Date.now()
-        };
-        set((state) => ({
-          groups: [...state.groups, newGroup]
-        }));
-      },
+    addGroup: async (group) => {
+      await groupService.createGroup(group);
+      // 重新加载分组数据
+      await get().loadGroups();
+    },
 
-      updateGroup: (id, updates) => {
-        set((state) => ({
-          groups: state.groups.map((group) =>
-            group.id === id
-              ? {
-                  ...group,
-                  ...updates,
-                  updatedAt: Date.now()
-                }
-              : group
-          )
-        }));
-      },
+    updateGroup: async (id, updates) => {
+      await groupService.updateGroup(id, updates);
+      // 重新加载分组数据
+      await get().loadGroups();
+    },
 
-      deleteGroup: (id) => {
-        set((state) => ({
-          groups: state.groups.filter((group) => group.id !== id)
-        }));
-      },
+    deleteGroup: async (id) => {
+      await groupService.deleteGroup(id);
+      // 重新加载分组数据
+      await get().loadGroups();
+    },
 
-      getGroup: (id) => {
-        return get().groups.find((group) => group.id === id);
-      },
+    getGroup: (id) => {
+      return get().groups.find((group) => group.id === id);
+    },
 
-      loadGroups: () => {
-        // 从持久化存储加载数据
-        // 这里不需要额外操作，因为 persist 中间件会自动处理
+    loadGroups: async () => {
+      set({ loading: true });
+      try {
+        const groups = await groupService.getAllGroups();
+        set({ groups });
+      } catch (error) {
+        console.error('加载分组失败:', error);
+      } finally {
+        set({ loading: false });
       }
-    }),
-    {
-      name: 'group-storage'
     }
-  )
+  })
 );

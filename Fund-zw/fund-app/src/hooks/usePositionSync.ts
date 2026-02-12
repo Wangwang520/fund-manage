@@ -136,7 +136,7 @@ export function usePositionSync(): UsePositionSyncReturn {
 
   // 解决冲突
   const resolveConflict = useCallback(async (conflictId: string, useLocal: boolean): Promise<boolean> => {
-    const success = await positionSyncService.resolveConflict(conflictId, useLocal);
+    const success = await positionSyncService.resolveConflict(conflictId, useLocal ? 'local' : 'server');
     
     if (success) {
       // 重新同步以应用解决结果

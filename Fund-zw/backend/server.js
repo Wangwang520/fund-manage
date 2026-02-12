@@ -26,8 +26,23 @@ const memoryStore = {
 
 let useMemoryStore = false;
 
+// 构建MongoDB连接字符串
+let mongoDbUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/fund-app';
+const username = process.env.MongoDB_Username;
+const password = process.env.MongoDB_Password;
+
+if (username && password) {
+  // 构建带认证的连接字符串
+  const uriParts = mongoDbUri.split('://');
+  const protocol = uriParts[0];
+  const rest = uriParts[1];
+  const [hostPort, dbName] = rest.split('/');
+  
+  mongoDbUri = `${protocol}://${encodeURIComponent(username)}:${encodeURIComponent(password)}@${hostPort}/${dbName || ''}`;
+}
+
 // 尝试连接 MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/fund-app')
+mongoose.connect(mongoDbUri)
   .then(() => {
     console.log('MongoDB 连接成功');
     useMemoryStore = false;

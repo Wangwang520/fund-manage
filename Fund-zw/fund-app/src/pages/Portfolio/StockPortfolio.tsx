@@ -190,45 +190,48 @@ export const StockPortfolio: React.FC = () => {
         return { totalAsset, totalProfit, totalProfitRate, dayProfit };
     };
 
+    // 响应式列宽设置
+    const isMobile = window.innerWidth < 768;
+    
     // 表格列定义
     const columns = [
         {
             title: '股票代码',
             dataIndex: 'stockCode',
             key: 'stockCode',
-            width: 100,
+            width: isMobile ? 80 : 100,
         },
         {
             title: '股票名称',
             dataIndex: 'stockName',
             key: 'stockName',
-            width: 150,
+            width: isMobile ? 100 : 150,
             render: (text: string) => (
                 <Tooltip title={text}>
-                    <span style={{ fontWeight: 500 }}>{text}</span>
+                    <span style={{ fontWeight: 500, fontSize: isMobile ? '12px' : '14px' }}>{text}</span>
                 </Tooltip>
             ),
         },
         {
-            title: '持有数量',
+            title: '数量',
             dataIndex: 'quantity',
             key: 'quantity',
-            width: 100,
+            width: isMobile ? 70 : 100,
             align: 'right' as const,
             render: (value: number) => value.toFixed(0),
         },
         {
-            title: '成本价',
+            title: '成本',
             dataIndex: 'costPrice',
             key: 'costPrice',
-            width: 100,
+            width: isMobile ? 80 : 100,
             align: 'right' as const,
             render: (value: number) => `¥${value.toFixed(3)}`,
         },
         {
-            title: '当前价',
+            title: '当前',
             key: 'currentPrice',
-            width: 100,
+            width: isMobile ? 80 : 100,
             align: 'right' as const,
             render: (_: unknown, record: UserStockHolding) => {
                 const quote = quotes.get(record.stockCode);
@@ -239,37 +242,37 @@ export const StockPortfolio: React.FC = () => {
             },
         },
         {
-            title: '涨跌幅',
+            title: '涨跌',
             key: 'change',
-            width: 100,
+            width: isMobile ? 80 : 100,
             align: 'right' as const,
             render: (_: unknown, record: UserStockHolding) => {
                 const quote = quotes.get(record.stockCode);
                 if (!quote) return '-';
                 const color = getProfitColor(quote.increaseRate);
                 return (
-                    <span style={{ color, fontWeight: 500 }}>
+                    <span style={{ color, fontWeight: 500, fontSize: isMobile ? '12px' : '14px' }}>
                         {quote.increaseRate >= 0 ? '+' : ''}{quote.increaseRate.toFixed(2)}%
                     </span>
                 );
             },
         },
         {
-            title: '持仓市值',
+            title: '市值',
             key: 'marketValue',
-            width: 120,
+            width: isMobile ? 90 : 120,
             align: 'right' as const,
             render: (_: unknown, record: UserStockHolding) => {
                 const quote = quotes.get(record.stockCode);
                 const price = quote?.price || record.costPrice;
                 const value = price * record.quantity;
-                return <span style={{ fontWeight: 500 }}>¥{value.toFixed(2)}</span>;
+                return <span style={{ fontWeight: 500, fontSize: isMobile ? '12px' : '14px' }}>¥{value.toFixed(2)}</span>;
             },
         },
         {
-            title: '持仓收益',
+            title: '收益',
             key: 'profit',
-            width: 120,
+            width: isMobile ? 90 : 120,
             align: 'right' as const,
             render: (_: unknown, record: UserStockHolding) => {
                 const quote = quotes.get(record.stockCode);
@@ -277,7 +280,7 @@ export const StockPortfolio: React.FC = () => {
                 const profit = (currentPrice - record.costPrice) * record.quantity;
                 const color = getProfitColor(profit);
                 return (
-                    <span style={{ color, fontWeight: 500 }}>
+                    <span style={{ color, fontWeight: 500, fontSize: isMobile ? '12px' : '14px' }}>
                         {profit >= 0 ? '+' : ''}¥{profit.toFixed(2)}
                     </span>
                 );
@@ -286,7 +289,7 @@ export const StockPortfolio: React.FC = () => {
         {
             title: '收益率',
             key: 'profitRate',
-            width: 100,
+            width: isMobile ? 80 : 100,
             align: 'right' as const,
             render: (_: unknown, record: UserStockHolding) => {
                 const quote = quotes.get(record.stockCode);
@@ -296,7 +299,7 @@ export const StockPortfolio: React.FC = () => {
                     : 0;
                 const color = getProfitColor(profitRate);
                 return (
-                    <span style={{ color, fontWeight: 500 }}>
+                    <span style={{ color, fontWeight: 500, fontSize: isMobile ? '12px' : '14px' }}>
                         {profitRate >= 0 ? '+' : ''}{profitRate.toFixed(2)}%
                     </span>
                 );
@@ -305,17 +308,17 @@ export const StockPortfolio: React.FC = () => {
         {
             title: '操作',
             key: 'action',
-            width: 120,
+            width: isMobile ? 100 : 120,
             fixed: 'right' as const,
             render: (_: unknown, record: UserStockHolding) => (
-                <Space size="small">
+                <Space size={isMobile ? 'small' : 'small'}>
                     <Button
                         type="text"
                         size="small"
                         icon={<EditOutlined />}
                         onClick={() => openEditModal(record)}
                     >
-                        编辑
+                        {isMobile ? '' : '编辑'}
                     </Button>
                     <Popconfirm
                         title="确认删除"
@@ -331,7 +334,7 @@ export const StockPortfolio: React.FC = () => {
                             danger
                             icon={<DeleteOutlined />}
                         >
-                            删除
+                            {isMobile ? '' : '删除'}
                         </Button>
                     </Popconfirm>
                 </Space>
@@ -453,34 +456,36 @@ export const StockPortfolio: React.FC = () => {
                 <div 
                     style={{ 
                         display: 'flex', 
-                        gap: 24, 
+                        flexDirection: isMobile ? 'column' : 'row',
+                        gap: isMobile ? 12 : 24, 
                         marginBottom: 16,
                         padding: '12px 16px',
                         background: 'var(--glass-bg)',
                         borderRadius: 8,
                         border: '1px solid var(--glass-border)',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
+                        justifyContent: isMobile ? 'space-between' : 'space-between',
+                        alignItems: isMobile ? 'flex-start' : 'center',
+                        flexWrap: 'wrap',
                     }}
                 >
-                    <div style={{ display: 'flex', gap: 24 }}>
-                        <span>
+                    <div style={{ display: 'flex', gap: isMobile ? 12 : 24, flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: isMobile ? '12px' : '14px' }}>
                             <span style={{ color: 'var(--text-secondary)' }}>总资产: </span>
                             <span style={{ fontWeight: 600 }}>¥{stats.totalAsset.toFixed(2)}</span>
                         </span>
-                        <span>
+                        <span style={{ fontSize: isMobile ? '12px' : '14px' }}>
                             <span style={{ color: 'var(--text-secondary)' }}>总收益: </span>
                             <span style={{ fontWeight: 600, color: getProfitColor(stats.totalProfit) }}>
                                 {stats.totalProfit >= 0 ? '+' : ''}¥{stats.totalProfit.toFixed(2)}
                             </span>
                         </span>
-                        <span>
+                        <span style={{ fontSize: isMobile ? '12px' : '14px' }}>
                             <span style={{ color: 'var(--text-secondary)' }}>收益率: </span>
                             <span style={{ fontWeight: 600, color: getProfitColor(stats.totalProfitRate) }}>
                                 {stats.totalProfitRate >= 0 ? '+' : ''}{stats.totalProfitRate.toFixed(2)}%
                             </span>
                         </span>
-                        <span>
+                        <span style={{ fontSize: isMobile ? '12px' : '14px' }}>
                             <span style={{ color: 'var(--text-secondary)' }}>今日: </span>
                             <span style={{ fontWeight: 600, color: getProfitColor(stats.dayProfit) }}>
                                 {stats.dayProfit >= 0 ? '+' : ''}¥{stats.dayProfit.toFixed(2)}
@@ -490,6 +495,7 @@ export const StockPortfolio: React.FC = () => {
                     <Button 
                         type="primary" 
                         icon={<PlusOutlined />} 
+                        size={isMobile ? 'small' : 'middle'}
                         onClick={() => {
                             setCurrentGroupForAdd(group?.id);
                             setIsAddModalOpen(true);
@@ -499,7 +505,7 @@ export const StockPortfolio: React.FC = () => {
                             }, 0);
                         }}
                     >
-                        添加持仓
+                        {isMobile ? '添加' : '添加持仓'}
                     </Button>
                 </div>
                 <Table

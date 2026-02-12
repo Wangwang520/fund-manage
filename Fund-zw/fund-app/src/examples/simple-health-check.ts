@@ -50,7 +50,7 @@ async function checkServices() {
   console.log('\n3️⃣ 检查同步API端点...');
   try {
     const syncResponse = await fetch('http://localhost:3001/api/position-sync/status');
-    const syncData = await syncResponse.json();
+    await syncResponse.json();
     
     if (syncResponse.status === 401) {
       console.log('   ✅ 同步API端点正常（需要认证）');

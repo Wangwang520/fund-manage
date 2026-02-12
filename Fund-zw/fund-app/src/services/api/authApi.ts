@@ -1,5 +1,5 @@
-import axios from 'axios';
 import type { LoginRequest, RegisterRequest, AuthResponse, UserDataResponse } from '../../models/auth';
+import { baseApiService } from './baseApi';
 
 /**
  * 认证 API 服务
@@ -8,37 +8,28 @@ export class AuthApiService {
   /**
    * 登录
    */
-  async login(data: LoginRequest): Promise<AuthResponse> {
-    const response = await axios.post<AuthResponse>('/api/auth/login', data);
-    return response.data;
+  async login(data: LoginRequest): Promise<any> {
+    const response = await baseApiService.post<AuthResponse>('/api/auth/login', data);
+    return response;
   }
 
   /**
    * 注册
    */
-  async register(data: RegisterRequest): Promise<AuthResponse> {
-    const response = await axios.post<AuthResponse>('/api/auth/register', data);
-    return response.data;
+  async register(data: RegisterRequest): Promise<any> {
+    const response = await baseApiService.post<AuthResponse>('/api/auth/register', data);
+    return response;
   }
 
   /**
    * 获取当前用户信息
    */
   async getCurrentUser(): Promise<{ success: boolean; data?: { user: any } }> {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      return { success: false };
-    }
-    
     try {
-      const response = await axios.get('/api/auth/me', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      return response.data;
+      const response = await baseApiService.get('/api/auth/me');
+      return response;
     } catch (error) {
-      // 捕获 401 错误，不抛出异常，而是返回失败响应
+      // 捕获错误，不抛出异常，而是返回失败响应
       return { success: false };
     }
   }
@@ -47,17 +38,8 @@ export class AuthApiService {
    * 获取用户数据
    */
   async getUserData(): Promise<UserDataResponse> {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('未登录或登录已过期');
-    }
-    
-    const response = await axios.get('/api/data/get', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    return response.data;
+    const response = await baseApiService.get('/api/data/get');
+    return response;
   }
 
   /**
@@ -68,18 +50,9 @@ export class AuthApiService {
     stockHoldings?: any[];
     accountGroups?: any[];
     settings?: any;
-  }): Promise<{ success: boolean; message: string }> {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('未登录或登录已过期');
-    }
-    
-    const response = await axios.post('/api/data/save', data, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    return response.data;
+  }): Promise<any> {
+    const response = await baseApiService.post('/api/data/save', data);
+    return response;
   }
 
   /**
@@ -90,18 +63,9 @@ export class AuthApiService {
     stockHoldings?: any[];
     accountGroups?: any[];
     settings?: any;
-  }): Promise<{ success: boolean; message: string }> {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('未登录或登录已过期');
-    }
-    
-    const response = await axios.post('/api/data/update', data, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    return response.data;
+  }): Promise<any> {
+    const response = await baseApiService.post('/api/data/update', data);
+    return response;
   }
 
   /**

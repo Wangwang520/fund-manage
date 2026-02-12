@@ -3,6 +3,7 @@ import type { UserHolding, FundQuote, DashboardDTO, AppSettings } from '../model
 import { portfolioService } from '../services/db/portfolioService';
 import { fundApiService } from '../services/api/fundApi';
 import { profitCalculator } from '../services/calculator/profitCalculator';
+import { authApiService } from '../services/api/authApi';
 
 interface FundStore {
     // 状态
@@ -21,8 +22,8 @@ interface FundStore {
     calculateDashboard: () => void;
     
     // 设置操作
-    loadSettings: () => void;
-    updateSettings: (settings: Partial<AppSettings>) => void;
+    loadSettings: () => Promise<void>;
+    updateSettings: (settings: Partial<AppSettings>) => Promise<void>;
     
     // 数据导入导出
     exportData: () => string;
@@ -36,19 +37,6 @@ const defaultSettings: AppSettings = {
     lastSyncTime: null,
 };
 
-// 从 localStorage 加载设置
-const loadSettingsFromStorage = (): AppSettings => {
-    try {
-        const saved = localStorage.getItem('fundManager_settings');
-        if (saved) {
-            return { ...defaultSettings, ...JSON.parse(saved) };
-        }
-    } catch (error) {
-        console.error('加载设置失败:', error);
-    }
-    return defaultSettings;
-};
-
 export const useFundStore = create<FundStore>((set, get) => ({
     holdings: [],
     quotes: new Map(),
@@ -59,7 +47,7 @@ export const useFundStore = create<FundStore>((set, get) => ({
         dayProfit: 0,
     },
     loading: false,
-    settings: loadSettingsFromStorage(),
+    settings: defaultSettings,
 
     loadHoldings: async () => {
         set({ loading: true });
@@ -67,6 +55,7 @@ export const useFundStore = create<FundStore>((set, get) => ({
             const holdings = await portfolioService.getAllHoldings();
             set({ holdings });
             await get().refreshQuotes();
+            await get().loadSettings(); // 同时加载设置
         } finally {
             set({ loading: false });
         }
@@ -104,18 +93,24 @@ export const useFundStore = create<FundStore>((set, get) => ({
     },
 
     // 加载设置
-    loadSettings: () => {
-        const settings = loadSettingsFromStorage();
-        set({ settings });
+    loadSettings: async () => {
+        try {
+            const response = await authApiService.getUserData();
+            if (response.success && response.data && response.data.settings) {
+                set({ settings: response.data.settings });
+            }
+        } catch (error) {
+            console.error('加载设置失败:', error);
+        }
     },
 
     // 更新设置
-    updateSettings: (newSettings) => {
+    updateSettings: async (newSettings) => {
         const updated = { ...get().settings, ...newSettings };
         set({ settings: updated });
-        // 保存到 localStorage
+        // 保存到服务端
         try {
-            localStorage.setItem('fundManager_settings', JSON.stringify(updated));
+            await authApiService.saveUserData({ settings: updated });
         } catch (error) {
             console.error('保存设置失败:', error);
         }
@@ -174,7 +169,7 @@ export const useFundStore = create<FundStore>((set, get) => ({
 
             // 导入设置
             if (data.settings) {
-                get().updateSettings(data.settings);
+                await get().updateSettings(data.settings);
             }
 
             // 重新加载数据

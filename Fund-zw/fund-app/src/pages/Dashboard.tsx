@@ -309,7 +309,7 @@ export const Dashboard: React.FC = React.memo(() => {
                             transform: 'translateZ(0)', // 启用硬件加速
                             willChange: 'transform, box-shadow'
                         }}
-                        bodyStyle={{ padding: 0 }}
+                        styles={{ body: { padding: 0 } }}
                     >
                         <div className="stat-card-content" style={{
                             padding: isMobile ? '16px' : '20px',
@@ -361,7 +361,7 @@ export const Dashboard: React.FC = React.memo(() => {
                             transform: 'translateZ(0)', // 启用硬件加速
                             willChange: 'transform, box-shadow'
                         }}
-                        bodyStyle={{ padding: 0 }}
+                        styles={{ body: { padding: 0 } }}
                     >
                         <div className="stat-card-content" style={{
                             padding: isMobile ? '16px' : '20px',
@@ -415,7 +415,7 @@ export const Dashboard: React.FC = React.memo(() => {
                             transform: 'translateZ(0)', // 启用硬件加速
                             willChange: 'transform, box-shadow'
                         }}
-                        bodyStyle={{ padding: 0 }}
+                        styles={{ body: { padding: 0 } }}
                     >
                         <div className="stat-card-content" style={{
                             padding: isMobile ? '16px' : '20px',
@@ -468,7 +468,7 @@ export const Dashboard: React.FC = React.memo(() => {
                             transform: 'translateZ(0)', // 启用硬件加速
                             willChange: 'transform, box-shadow'
                         }}
-                        bodyStyle={{ padding: 0 }}
+                        styles={{ body: { padding: 0 } }}
                     >
                         <div className="stat-card-content" style={{
                             padding: isMobile ? '16px' : '20px',
